@@ -124,7 +124,7 @@
             const anguloFase = Math.atan2(reactanciaTotal, resistencia) * (180 / Math.PI); // Convertido a grados
 
             // Actualizar la tabla con los valores
-            document.getElementById('valorResistencia').textContent = resistencia.toFixed(2) + "Ω";
+            document.getElementById('valorResistencia').textContent = resistencia.toFixed(2);
             document.getElementById('valorReactanciaInductiva').textContent = reactanciaInductiva.toFixed(2);
             document.getElementById('valorReactanciaCapacitiva').textContent = reactanciaCapacitiva.toFixed(2);
             document.getElementById('valorImpedanciaTotal').textContent = impedanciaTotal.toFixed(2);
@@ -132,7 +132,7 @@
             document.getElementById('inductancia1').textContent = inductancia_mH + "mH";
             document.getElementById('capacitancia1').textContent = capacitancia_uF+ "µF";
             document.getElementById('complejos').textContent = resistencia + " + J" + impedanciaTotal.toFixed(2);
-           document.getElementById('resistencia1').textContent = resistencia;
+           document.getElementById('resistencia1').textContent = resistencia + "Ω";
 
             // Datos para los vectores en el triángulo de potencia
             const dataPoints = [
