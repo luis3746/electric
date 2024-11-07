@@ -18,7 +18,7 @@
             display:inline-block;
         }
         table {
-            width: 50%;
+            width: 400px;
             border-collapse: collapse;
         }
         table, th, td {
@@ -43,17 +43,17 @@
 
     <div class="input-container">
         <label for="resistencia">Resistencia (R en Ω): </label>
-        <input type="number" id="resistencia" value="20" step="1" oninput="updateAndDraw()">
+        <input type="nrange" id="resistencia" value="20" step="1" oninput="updateAndDraw()">
     </div>
 
     <div class="input-container">
         <label for="inductancia">Inductancia (L en mH): </label>
-        <input type="number" id="inductancia" value="100" step="1" oninput="updateAndDraw()">
+        <input type="range" id="inductancia" value="100" step="1" oninput="updateAndDraw()">
     </div>
 
     <div class="input-container">
         <label for="capacitancia">Capacitancia (C en µF): </label>
-        <input type="number" id="capacitancia" value="35" step="1" oninput="updateAndDraw()">
+        <input type="range" id="capacitancia" value="35" step="1" oninput="updateAndDraw()">
     </div>
     
     <div id="chart-container"></div>
