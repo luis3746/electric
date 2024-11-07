@@ -11,12 +11,12 @@
             margin-bottom: 10px;
         }
         #chart-container {
-            width: 600px;
-            height: 400px;
+            width: 900px;
+            height: 600px;
             margin-top: 20px;
         }
         table {
-            width: 100%;
+            width: 50%;
             border-collapse: collapse;
         }
         table, th, td {
@@ -41,7 +41,7 @@
 
     <div class="input-container">
         <label for="resistencia">Resistencia (R en Ω): </label>
-        <input type="number" id="resistencia" value="20" step="0.1" oninput="updateAndDraw()">
+        <input type="number" id="resistencia" value="20" step="1" oninput="updateAndDraw()">
     </div>
 
     <div class="input-container">
@@ -51,7 +51,7 @@
 
     <div class="input-container">
         <label for="capacitancia">Capacitancia (C en µF): </label>
-        <input type="number" id="capacitancia" value="35" step="0.1" oninput="updateAndDraw()">
+        <input type="number" id="capacitancia" value="35" step="1" oninput="updateAndDraw()">
     </div>
 
     <div class="output-table-container">
@@ -173,7 +173,7 @@
                             { x: 0, y: reactanciaInductiva }
                         ],
                         color: '#00FF00',
-                        lineWidth: 2,
+                        lineWidth: 4,
                         marker: { enabled: false }
                     },
                     {
@@ -183,7 +183,7 @@
                             { x: 0, y: reactanciaCapacitiva }
                         ],
                         color: '#0000FF',
-                        lineWidth: 2,
+                        lineWidth: 4,
                         marker: { enabled: false }
                     },
                     {
