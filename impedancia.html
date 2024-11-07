@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triángulo de Potencia con Vectores de Resistencia y Reactancia</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        .input-container {
+            margin-bottom: 10px;
+        }
+        #chart-container {
+            width: 600px;
+            height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Triángulo de Potencia con Vectores de Resistencia y Reactancia</h2>
+
+    <div class="input-container">
+        <label for="frecuencia">Frecuencia (Hz): </label>
+        <input type="number" id="frecuencia" value="60" step="1" oninput="updateValues()" onkeydown="drawTriangleWhilePressing(event)">
+        <span id="frecuenciaValue">60 Hz</span>
+    </div>
+
+    <div class="input-container">
+        <label for="resistencia">Resistencia (R): </label>
+        <input type="number" id="resistencia" value="10" step="0.1" oninput="updateValues()" onkeydown="drawTriangleWhilePressing(event)">
+        <span id="resistenciaValue">10 Ω</span>
+    </div>
+
+    <div class="input-container">
+        <label for="inductancia">Inductancia (L): </label>
+        <input type="number" id="inductancia" value="0.1" step="0.01" oninput="updateValues()" onkeydown="drawTriangleWhilePressing(event)">
+        <span id="reactanciaInductivaValue">Reactancia Inductiva (XL): 0.63 Ω</span>
+    </div>
+
+    <div class="input-container">
+        <label for="capacitancia">Capacitancia (C): </label>
+        <input type="number" id="capacitancia" value="0.1" step="0.01" oninput="updateValues()" onkeydown="drawTriangleWhilePressing(event)">
+        <span id="reactanciaCapacitivaValue">Reactancia Capacitiva (XC): -1.59 Ω</span>
+    </div>
+
+    <div id="chart-container"></div>
+
+    <script>
+        // Variables para almacenar los valores actuales de resistencia, inductancia, capacitancia y frecuencia
+        let resistencia, inductancia, capacitancia, frecuencia;
+
+        // Función para actualizar los valores sin graficar
+        function updateValues() {
+            resistencia = parseFloat(document.getElementById('resistencia').value);
+            inductancia = parseFloat(document.getElementById('inductancia').value);
+            capacitancia = parseFloat(document.getElementById('capacitancia').value);
+            frecuencia = parseFloat(document.getElementById('frecuencia').value);
+
+            // Calcular reactancias y actualizar los valores en pantalla
+            const reactanciaInductiva = 2 * Math.PI * frecuencia * inductancia;
+            const reactanciaCapacitiva = -1 / (2 * Math.PI * frecuencia * capacitancia);
+
+            document.getElementById('frecuenciaValue').textContent = `${frecuencia.toFixed(2)} Hz`;
+            document.getElementById('resistenciaValue').textContent = `${resistencia.toFixed(2)} Ω`;
+            document.getElementById('reactanciaInductivaValue').textContent = `Reactancia Inductiva (XL): ${reactanciaInductiva.toFixed(2)} Ω`;
+            document.getElementById('reactanciaCapacitivaValue').textContent = `Reactancia Capacitiva (XC): ${reactanciaCapacitiva.toFixed(2)} Ω`;
+        }
+
+        // Función para graficar el triángulo mientras se mantiene presionada la tecla Control
+        function drawTriangleWhilePressing(event) {
+            if (event.ctrlKey) {
+                drawTriangle();
+            }
+        }
+
+        function drawTriangle() {
+            // Calcular reactancia inductiva y capacitiva
+            const reactanciaInductiva = 2 * Math.PI * frecuencia * inductancia;
+            const reactanciaCapacitiva = -1 / (2 * Math.PI * frecuencia * capacitancia);
+            const reactanciaTotal = reactanciaInductiva + reactanciaCapacitiva;
+
+            // Calcular la impedancia total y el ángulo de fase
+            const impedanciaTotal = Math.sqrt(Math.pow(resistencia, 2) + Math.pow(reactanciaTotal, 2));
+            const anguloFase = Math.atan2(reactanciaTotal, resistencia) * (180 / Math.PI); // Convertido a grados
+
+            // Datos para cada vector en el triángulo de potencia
+            const dataPoints = [
+                { x: 0, y: 0 }, // Origen
+                { x: resistencia, y: 0 }, // Vector de Resistencia
+                { x: 0, y: reactanciaInductiva }, // Vector de Reactancia Inductiva
+                { x: 0, y: reactanciaCapacitiva }, // Vector de Reactancia Capacitiva
+                { x: impedanciaTotal * Math.cos(anguloFase * Math.PI / 180), y: impedanciaTotal * Math.sin(anguloFase * Math.PI / 180) } // Vector de Impedancia Total
+            ];
+
+            // Configuración del gráfico de Highcharts para graficar el triángulo de potencia con los vectores
+            Highcharts.chart('chart-container', {
+                chart: {
+                    type: 'scatter'
+                },
+                title: {
+                    text: 'Triángulo de Potencia'
+                },
+                xAxis: {
+                    title: {
+                        text: 'Resistencia (Ω)'
+                    },
+                    min: 0,
+                    max: Math.max(20, resistencia + 10) // Ajuste dinámico del eje X
+                },
+                yAxis: {
+                    title: {
+                        text: 'Reactancia (Ω)'
+                    },
+                    min: -Math.max(20, Math.abs(reactanciaCapacitiva) + 10),
+                    max: Math.max(20, reactanciaInductiva + 10)
+                },
+                series: [{
+                    name: 'Vector de Resistencia',
+                    type: 'line',
+                    data: [
+                        [0, 0],
+                        [resistencia, 0]
+                    ],
+                    color: '#FF0000',
+                    marker: {
+                        enabled: false
+                    }
+                }, {
+                    name: 'Vector de Reactancia Inductiva',
+                    type: 'line',
+                    data: [
+                        [0, 0],
+                        [0, reactanciaInductiva]
+                    ],
+                    color: '#00FF00',
+                    marker: {
+                        enabled: false
+                    }
+                }, {
+                    name: 'Vector de Reactancia Capacitiva',
+                    type: 'line',
+                    data: [
+                        [0, 0],
+                        [0, reactanciaCapacitiva]
+                    ],
+                    color: '#0000FF',
+                    marker: {
+                        enabled: false
+                    }
+                }, {
+                    name: 'Vector de Impedancia Total',
+                    type: 'line',
+                    data: [
+                        [0, 0],
+                        [
+                            impedanciaTotal * Math.cos(anguloFase * Math.PI / 180),
+                            impedanciaTotal * Math.sin(anguloFase * Math.PI / 180)
+                        ]
+                    ],
+                    color: '#FFA500',
+                    marker: {
+                        enabled: false
+                    }
+                }],
+                annotations: [{
+                    labels: [{
+                        point: { x: resistencia / 2, y: 0 },
+                        text: `R = ${resistencia.toFixed(2)} Ω`,
+                        style: { color: '#FF0000' }
+                    }, {
+                        point: { x: 0, y: reactanciaInductiva / 2 },
+                        text: `XL = ${reactanciaInductiva.toFixed(2)} Ω`,
+                        style: { color: '#00FF00' }
+                    }, {
+                        point: { x: 0, y: reactanciaCapacitiva / 2 },
+                        text: `XC = ${reactanciaCapacitiva.toFixed(2)} Ω`,
+                        style: { color: '#0000FF' }
+                    }, {
+                        point: {
+                            x: impedanciaTotal * Math.cos(anguloFase * Math.PI / 180) / 2,
+                            y: impedanciaTotal * Math.sin(anguloFase * Math.PI / 180) / 2
+                        },
+                        text: `|Z| = ${impedanciaTotal.toFixed(2)} Ω, θ = ${anguloFase.toFixed(2)}°`,
+                        style: { color: '#FFA500' }
+                    }]
+                }]
+            });
+        }
+
+        // Llamar a updateValues al cargar la página y dibujar el triángulo inicial
+        updateValues();
+        drawTriangle();
+    </script>
+</body>
+</html>
