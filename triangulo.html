@@ -80,13 +80,13 @@
                     <td>Reactancia Inductiva (XL)</td>
                     <td id="valorReactanciaInductiva"></td>
                     <td>90°</td>
-                    <td id='inductancia'></td>
+                    <td id='inductancia1'></td>
                 </tr>
                 <tr>
                     <td>Reactancia Capacitiva (XC)</td>
                     <td id="valorReactanciaCapacitiva"></td>
                     <td>-90°</td>
-                    <td id='capacitancia'></td>
+                    <td id='capacitancia1'></td>
                 </tr>
                 <tr>
                     <td>Impedancia Total (Z)</td>
@@ -129,8 +129,8 @@
             document.getElementById('valorReactanciaCapacitiva').textContent = reactanciaCapacitiva.toFixed(2);
             document.getElementById('valorImpedanciaTotal').textContent = impedanciaTotal.toFixed(2);
             document.getElementById('anguloImpedanciaTotal').textContent = anguloFase.toFixed(2) + "°";
-            document.getElementById('inductancia').textContent = inductancia_mH;
-            document.getElementById('capacitancia').textContent = capacitancia_uF;
+            document.getElementById('inductancia1').textContent = inductancia_mH;
+            document.getElementById('capacitancia1').textContent = capacitancia_uF;
             document.getElementById('complejos').textContent = resistensia + "J" + impedanciaTotal;
            
 
