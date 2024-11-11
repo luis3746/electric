@@ -105,7 +105,7 @@ const tipoFase = potenciaReactivaTotal > 0 ? "en atraso" : "en adelanto";
             document.getElementById('potenciaReactivaCapacitiva').textContent = potenciaReactivaCapacitiva.toFixed(2);
             document.getElementById('potenciaReactivaTotal').textContent = potenciaReactivaTotal.toFixed(2);
             document.getElementById('potenciaAparente').textContent = potenciaAparente.toFixed(2);
-document.getElementById('apotenciaAparente').textContent = anguloFaseDeg.toFixed(2) + "en " +tipoFase;
+document.getElementById('apotenciaAparente').textContent = anguloFaseDeg.toFixed(2) + " " +tipoFase;
             Highcharts.chart('chart-container', {
                 chart: { type: 'line', polar: true },
                 title: { text: 'Triángulo de Potencia' },
