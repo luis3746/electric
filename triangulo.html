@@ -99,7 +99,7 @@
             const impedanciaTotal = Math.sqrt(Math.pow(resistencia, 2) + Math.pow(reactanciaTotal, 2));
             const anguloFase = Math.atan2(reactanciaTotal, resistencia) * (180 / Math.PI); // Convertido a grados
             
-            const impedancias = "R= " + resistencia + "Xl= " + reactanciaInductiva + "/n </br> \n Xc= " + reactanciaCapacitiva + " Xt= " + reactanciaTotal + " Z= " + impedanciaTotal + ", Angulo= " + anguloFase; 
+            const impedancias = "R= " + resistencia + "Xl= " + reactanciaInductivatoFixed(2) + " Xc= " + reactanciaCapacitivatoFixed(2) + " Xt= " + reactanciaTotaltoFixed(2) + " Z= " + impedanciaTotaltoFixed(2) + ", Angulo= " + anguloFasetoFixed(2); 
             const potenciaActiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / resistencia;
             const potenciaReactivaInductiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / reactanciaInductiva;
             const potenciaReactivaCapacitiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / Math.abs(reactanciaCapacitiva);
