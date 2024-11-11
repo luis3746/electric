@@ -66,6 +66,7 @@
                     <tr><td>Potencia Reactiva Capacitiva (VAR)</td><td id="potenciaReactivaCapacitiva"></td></tr>
                     <tr><td>Potencia Reactiva Total (VAR)</td><td id="potenciaReactivaTotal"></td></tr>
                     <tr><td>Potencia Aparente (VA)</td><td id="potenciaAparente"></td></tr>
+                    <tr><td>Angulo (VA)</td><td id="apotenciaAparente"></td></tr>
                 </tbody>
             </table>
         </div>
@@ -94,13 +95,17 @@
             const potenciaReactivaCapacitiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / Math.abs(reactanciaCapacitiva);
             const potenciaReactivaTotal = potenciaReactivaInductiva - potenciaReactivaCapacitiva;
             const potenciaAparente = Math.sqrt(Math.pow(potenciaActiva, 2) + Math.pow(potenciaReactivaTotal, 2));
+const anguloFaseRad = Math.atan2(potenciaReactivaTotal, potenciaActiva);
+const anguloFaseDeg = anguloFaseRad * (180 / Math.PI); // Convertir a grados si es necesario
 
+// Determinar si el ángulo está en adelanto o en atraso
+const tipoFase = potenciaReactivaTotal > 0 ? "en atraso" : "en adelanto";
             document.getElementById('potenciaActiva').textContent = potenciaActiva.toFixed(2);
             document.getElementById('potenciaReactivaInductiva').textContent = potenciaReactivaInductiva.toFixed(2);
             document.getElementById('potenciaReactivaCapacitiva').textContent = potenciaReactivaCapacitiva.toFixed(2);
             document.getElementById('potenciaReactivaTotal').textContent = potenciaReactivaTotal.toFixed(2);
             document.getElementById('potenciaAparente').textContent = potenciaAparente.toFixed(2);
-
+document.getElementById('apotenciaAparente').textContent = anguloFaseRad.toFixed(2) + "en " +tipoFase;
             Highcharts.chart('chart-container', {
                 chart: { type: 'line', polar: true },
                 title: { text: 'Triángulo de Potencia' },
