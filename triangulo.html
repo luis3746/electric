@@ -67,6 +67,7 @@
                     <tr><td>Potencia Reactiva Total (VAR)</td><td id="potenciaReactivaTotal"></td></tr>
                     <tr><td>Potencia Aparente (VA)</td><td id="potenciaAparente"></td></tr>
                     <tr><td>Angulo (°)</td><td id="apotenciaAparente"></td></tr>
+                    <tr><td>impedancias</td><td id="impedancias"></td></tr>
                 </tbody>
             </table>
         </div>
@@ -88,8 +89,17 @@
             const inductancia = parseFloat(document.getElementById('inductancia').value) / 1000;
             const capacitancia = parseFloat(document.getElementById('capacitancia').value) * 1e-6;
 
+           
+            
             const reactanciaInductiva = 2 * Math.PI * frecuencia * inductancia;
             const reactanciaCapacitiva = -1 / (2 * Math.PI * frecuencia * capacitancia);
+             const reactanciaTotal = reactanciaInductiva + reactanciaCapacitiva;
+             
+
+            const impedanciaTotal = Math.sqrt(Math.pow(resistencia, 2) + Math.pow(reactanciaTotal, 2));
+            const anguloFase = Math.atan2(reactanciaTotal, resistencia) * (180 / Math.PI); // Convertido a grados
+            
+            const impédancias = "R= " + resistencia " " + "Xl= " + reactanciaInductiva + "Xc= " + reactanciaCapacitiva + "Xt= " + reactanciaTotal + "Z= " + impedanciaTotal + ", Angulo= " + anguloFase; 
             const potenciaActiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / resistencia;
             const potenciaReactivaInductiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / reactanciaInductiva;
             const potenciaReactivaCapacitiva = Math.pow(voltagePeak / Math.sqrt(2), 2) / Math.abs(reactanciaCapacitiva);
@@ -106,6 +116,10 @@ const tipoFase = potenciaReactivaTotal > 0 ? "en atraso" : "en adelanto";
             document.getElementById('potenciaReactivaTotal').textContent = potenciaReactivaTotal.toFixed(2);
             document.getElementById('potenciaAparente').textContent = potenciaAparente.toFixed(2);
 document.getElementById('apotenciaAparente').textContent = anguloFaseDeg.toFixed(2) + " " +tipoFase;
+
+                        document.getElementById('impedancias').textContent = potenciaAparente;
+
+            
             Highcharts.chart('chart-container', {
                 chart: { type: 'line', polar: true },
                 title: { text: 'Triángulo de Potencia' },
