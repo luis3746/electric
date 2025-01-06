@@ -1,6 +1,6 @@
 // Lista de archivos KMZ con nombres y rutas dentro de la carpeta "kmzBQuilla"
 const kmzBQuilla = [
-    { name: "Ruta B5-4121", url: "kmzBQuilla/B5-4121.kmz" },
+    { name: "Ruta B5-4121", url: "kmzBQuilla/B5-4121.kml" },
 ];
 
 // Inicializa el mapa
