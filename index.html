@@ -3,206 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triángulo de Potencia con Vectores de Impedancia</title>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <style>
-        .input-container, .output-table-container {
-            margin-bottom: 10px;
-        }
-        #chart-container {
-            width: 900px;
-            height: 600px;
-            margin-top: 20px;
-        }
-        table {
-            width: 50%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th, td {
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <title>KMZ Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
 </head>
 <body>
-    <h2>Triángulo de Potencia con Vectores de Impedancia</h2>
-
-    <div class="input-container">
-        <label for="frecuencia">Frecuencia (Hz): </label>
-        <input type="number" id="frecuencia" value="60" step="1" oninput="updateAndDraw()">
+    <div id="map-container">
+        <div id="map" class="map"></div>
+        <div id="menu">
+            <h3>Layers</h3>
+            <ul id="kmz-layers">
+                <!-- KMZ files will be dynamically loaded here -->
+            </ul>
+            <button id="toggle-base">Switch Base Map</button>
+        </div>
     </div>
-
-    <div class="input-container">
-        <label for="resistencia">Resistencia (R en Ω): </label>
-        <input type="number" id="resistencia" value="20" step="0.1" oninput="updateAndDraw()">
-    </div>
-
-    <div class="input-container">
-        <label for="inductancia">Inductancia (L en mH): </label>
-        <input type="number" id="inductancia" value="100" step="1" oninput="updateAndDraw()">
-    </div>
-
-    <div class="input-container">
-        <label for="capacitancia">Capacitancia (C en µF): </label>
-        <input type="number" id="capacitancia" value="35" step="0.1" oninput="updateAndDraw()">
-    </div>
-   <div id="chart-container"></div>
-    <div class="output-table-container">
-        <h3>Valores Calculados</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Variable</th>
-                    <th>Valor (Ω)</th>
-                    <th>Ángulo (°)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Resistencia (R)</td>
-                    <td id="valorResistencia"></td>
-                    <td>0°</td>
-                </tr>
-                <tr>
-                    <td>Reactancia Inductiva (XL)</td>
-                    <td id="valorReactanciaInductiva"></td>
-                    <td>90°</td>
-                </tr>
-                <tr>
-                    <td>Reactancia Capacitiva (XC)</td>
-                    <td id="valorReactanciaCapacitiva"></td>
-                    <td>-90°</td>
-                </tr>
-                <tr>
-                    <td>Impedancia Total (Z)</td>
-                    <td id="valorImpedanciaTotal"></td>
-                    <td id="anguloImpedanciaTotal"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
- 
-
-    <script>
-        let chart;  // Variable global para almacenar la instancia de Highcharts
-
-        function updateAndDraw() {
-            // Obtener y actualizar valores
-            const resistencia = parseFloat(document.getElementById('resistencia').value);
-            const inductancia_mH = parseFloat(document.getElementById('inductancia').value); // En mH
-            const capacitancia_uF = parseFloat(document.getElementById('capacitancia').value); // En µF
-            const frecuencia = parseFloat(document.getElementById('frecuencia').value);
-
-            // Convertir inductancia y capacitancia a henrios y faradios
-            const inductancia = inductancia_mH / 1000; // Convertir mH a H
-            const capacitancia = capacitancia_uF / 1e6; // Convertir µF a F
-
-            // Calcular reactancias
-            const reactanciaInductiva = 2 * Math.PI * frecuencia * inductancia;
-            const reactanciaCapacitiva = -1 / (2 * Math.PI * frecuencia * capacitancia);
-            const reactanciaTotal = reactanciaInductiva + reactanciaCapacitiva;
-
-            // Calcular la impedancia total y el ángulo de fase
-            const impedanciaTotal = Math.sqrt(Math.pow(resistencia, 2) + Math.pow(reactanciaTotal, 2));
-            const anguloFase = Math.atan2(reactanciaTotal, resistencia) * (180 / Math.PI); // Convertido a grados
-
-            // Actualizar la tabla con los valores
-            document.getElementById('valorResistencia').textContent = resistencia.toFixed(2);
-            document.getElementById('valorReactanciaInductiva').textContent = reactanciaInductiva.toFixed(2);
-            document.getElementById('valorReactanciaCapacitiva').textContent = reactanciaCapacitiva.toFixed(2);
-            document.getElementById('valorImpedanciaTotal').textContent = impedanciaTotal.toFixed(2);
-            document.getElementById('anguloImpedanciaTotal').textContent = anguloFase.toFixed(2) + "°";
-
-            // Datos para los vectores en el triángulo de potencia
-            const dataPoints = [
-                { x: 0, y: 0 }, // Origen
-                { x: resistencia, y: 0 }, // Vector de Resistencia
-                { x: 0, y: reactanciaInductiva }, // Vector de Reactancia Inductiva (positivo)
-                { x: 0, y: reactanciaCapacitiva }, // Vector de Reactancia Capacitiva (negativo)
-                { x: impedanciaTotal * Math.cos(anguloFase * Math.PI / 180), y: impedanciaTotal * Math.sin(anguloFase * Math.PI / 180) } // Vector de Impedancia Total
-            ];
-
-            // Si existe un gráfico de triángulo de potencia, destrúyelo antes de crear uno nuevo
-            if (chart) chart.destroy();
-
-            // Crear una nueva instancia de Highcharts con los datos actualizados para el triángulo de potencia
-            chart = Highcharts.chart('chart-container', {
-                chart: {
-                    type: 'line',
-                    polar: true,
-                    backgroundColor: 'transparent',
-                },
-                title: {
-                    text: 'Triángulo de Potencia'
-                },
-                xAxis: {
-                    title: { text: 'Resistencia (Ω)' },
-                    min: 0,
-                    max: Math.max(resistencia, impedanciaTotal),
-                    tickInterval: 10
-                },
-                yAxis: {
-                    title: { text: 'Reactancia (Ω)' },
-                    min: Math.min(reactanciaCapacitiva, 0),
-                    max: Math.max(reactanciaInductiva, impedanciaTotal),
-                    tickInterval: 10
-                },
-                series: [
-                    {
-                        name: 'Resistencia (R)',
-                        data: [
-                            { x: 0, y: 0 },
-                            { x: resistencia, y: 0 }
-                        ],
-                        color: '#FF0000',
-                        lineWidth: 2,
-                        marker: { enabled: false }
-                    },
-                    {
-                        name: 'Reactancia Inductiva (XL)',
-                        data: [
-                            { x: 0, y: 0 },
-                            { x: 0, y: reactanciaInductiva }
-                        ],
-                        color: '#00FF00',
-                        lineWidth: 2,
-                        marker: { enabled: false }
-                    },
-                    {
-                        name: 'Reactancia Capacitiva (XC)',
-                        data: [
-                            { x: 0, y: 0 },
-                            { x: 0, y: reactanciaCapacitiva }
-                        ],
-                        color: '#0000FF',
-                        lineWidth: 2,
-                        marker: { enabled: false }
-                    },
-                    {
-                        name: 'Impedancia Total (Z)',
-                        data: [
-                            { x: 0, y: 0 },
-                            { x: impedanciaTotal * Math.cos(anguloFase * Math.PI / 180), y: impedanciaTotal * Math.sin(anguloFase * Math.PI / 180) }
-                        ],
-                        color: '#FFA500',
-                        lineWidth: 2,
-                        marker: { enabled: false },
-                        dashStyle: 'Dash'
-                    }
-                ]
-            });
-        }
-
-        // Inicializar gráficos con los valores iniciales
-        updateAndDraw();
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
