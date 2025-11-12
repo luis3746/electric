@@ -5,23 +5,7 @@
     <title>Galería de YouTube</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .video-thumb img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-        }
-        .video-thumb {
-            position: relative;
-        }
-        .play-btn {
-            position: absolute;
-            left: 50%; top: 50%;
-            transform: translate(-50%,-50%);
-            font-size: 48px;
-            color: white;
-            text-shadow: 0 0 8px black;
-            pointer-events: none;
-        }
+        .video-thumb iframe { width: 100%; height: 230px; }
     </style>
 </head>
 <body>
@@ -34,34 +18,21 @@
 </div>
 
 <script>
-// Pega aquí tus links de prueba si no funciona el fetch:
-let videos = [
-  "https://www.youtube.com/watch?v=wlGgTxg2lAg",
-  "https://youtu.be/82jgT6DLN44",
-  "https://www.youtube.com/watch?v=iiE0IpwxM0g&ab_channel=MyChannel"
-];
+// Esta función lee el archivo txt de links (debe estar público)
+async function loadVideoLinks(url) {
+    const resp = await fetch(url);
+    const text = await resp.text();
+    // Filtra solo líneas que parecen URL de YouTube válidas
+    return text.split('\n').map(l => l.trim()).filter(l => l.match(/^https?:\/\/(www\.)?youtube\.com\/watch\?v=/));
+}
 
-// -- Si puedes, usa fetch para cargar un archivo txt público --
-// const TXT_FILE_URL = "https://tu-url-publica-del-txt";
-
-// async function loadVideoLinks(url) {
-//     try {
-//         const resp = await fetch(url);
-//         const text = await resp.text();
-//         return text.split('\n').map(l => l.trim()).filter(l => l.length > 5);
-//     } catch(e) {
-//         // Si falla fetch, usa el array videos
-//         return videos;
-//     }
-// }
-
+// Extrae el ID del video de YouTube desde la URL
 function getYouTubeID(url) {
-    let m = url.match(/v=([^&]+)/);
-    if (m) return m[1];
-    m = url.match(/youtu\.be\/([^\?&]+)/);
+    const m = url.match(/v=([^&]+)/);
     return m ? m[1] : null;
 }
 
+// Renderiza miniaturas en Bootstrap grid
 function renderGallery(videoLinks, page, perPage) {
     const gallery = document.getElementById('gallery');
     gallery.innerHTML = '';
@@ -70,22 +41,22 @@ function renderGallery(videoLinks, page, perPage) {
     for (let i = start; i < end; i++) {
         const videoID = getYouTubeID(videoLinks[i]);
         if(!videoID) continue;
-        const thumb = `https://img.youtube.com/vi/${videoID}/hqdefault.jpg`;
         gallery.innerHTML += `
         <div class="col-12 col-md-4">
           <div class="card">
-            <a href="https://www.youtube.com/watch?v=${videoID}" target="_blank" class="video-thumb">
-              <img src="${thumb}" alt="Miniatura video" class="card-img-top">
-              <span class="play-btn">▶</span>
-            </a>
-            <div class="card-body p-2 text-center">
+            <div class="video-thumb">
+              <iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>
+            </div>
+            <div class="card-body p-2">
               <a href="https://www.youtube.com/watch?v=${videoID}" target="_blank">Ver en YouTube</a>
             </div>
           </div>
-        </div>`;
+        </div>
+        `;
     }
 }
 
+// Genera la paginación Bootstrap
 function renderPagination(videoLinks, perPage, page, onPageClick) {
     const pagination = document.getElementById('pagination');
     const total = Math.ceil(videoLinks.length / perPage);
@@ -103,16 +74,19 @@ function renderPagination(videoLinks, perPage, page, onPageClick) {
     });
 }
 
-const PER_PAGE = 6;
+// Cambia esta URL por la de tu videos_subidos.txt compartido en Drive como "cualquiera con link puede ver"
+const TXT_FILE_URL = 'https://TU-LINK-DE-GOOGLE-DRIVE/txt';
+
+let videos = [];
+const PER_PAGE = 6; // Videos por página
 let currentPage = 1;
 
 window.addEventListener('DOMContentLoaded', async () => {
-    // let loadedVideos = await loadVideoLinks('https://raw.githubusercontent.com/luis3746/electric/refs/heads/main/videos_subidos.txt'); // Solo si fetch es posible
-    let loadedVideos = videos;
+    videos = await loadVideoLinks(TXT_FILE_URL);
     const renderAll = p => {
         currentPage = p;
-        renderGallery(loadedVideos, p, PER_PAGE);
-        renderPagination(loadedVideos, PER_PAGE, p, renderAll);
+        renderGallery(videos, p, PER_PAGE);
+        renderPagination(videos, PER_PAGE, p, renderAll);
     };
     renderAll(1);
 });
