@@ -33,42 +33,28 @@ function getYouTubeID(url) {
 }
 
 // Renderiza miniaturas en Bootstrap grid
-<!-- Dentro de tu renderGallery() -->
 function renderGallery(videoLinks, page, perPage) {
     const gallery = document.getElementById('gallery');
     gallery.innerHTML = '';
     const start = (page-1)*perPage;
     const end = Math.min(start+perPage, videoLinks.length);
-
     for (let i = start; i < end; i++) {
         const videoID = getYouTubeID(videoLinks[i]);
         if(!videoID) continue;
-        // Miniatura de calidad media (puedes usar "hqdefault.jpg", "mqdefault.jpg" o "sddefault.jpg")
-        const thumb = `https://img.youtube.com/vi/${videoID}/hqdefault.jpg`;
         gallery.innerHTML += `
         <div class="col-12 col-md-4">
           <div class="card">
-            <a href="https://www.youtube.com/watch?v=${videoID}" target="_blank" style="display:block;position:relative">
-              <img src="${thumb}" class="card-img-top" alt="Miniatura video">
-              <span style="
-                  position:absolute;
-                  left:50%;top:50%;
-                  transform:translate(-50%,-50%);
-                  font-size:48px;
-                  color:white;
-                  text-shadow:0 0 8px black;
-                  pointer-events: none;">
-                  ▶
-              </span>
-            </a>
+            <div class="video-thumb">
+              <iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>
+            </div>
             <div class="card-body p-2">
               <a href="https://www.youtube.com/watch?v=${videoID}" target="_blank">Ver en YouTube</a>
             </div>
           </div>
-        </div>`;
+        </div>
+        `;
     }
 }
-
 
 // Genera la paginación Bootstrap
 function renderPagination(videoLinks, perPage, page, onPageClick) {
@@ -89,7 +75,7 @@ function renderPagination(videoLinks, perPage, page, onPageClick) {
 }
 
 // Cambia esta URL por la de tu videos_subidos.txt compartido en Drive como "cualquiera con link puede ver"
-const TXT_FILE_URL = 'https://luis3746.github.io/electric/videos_subidos.txt';
+const TXT_FILE_URL = 'https://TU-LINK-DE-GOOGLE-DRIVE/txt';
 
 let videos = [];
 const PER_PAGE = 6; // Videos por página
